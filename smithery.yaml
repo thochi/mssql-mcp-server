@@ -1,0 +1,44 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - username
+      - password
+      - host
+    properties:
+      connectionString:
+        type: string
+        description: Full connection string for the MSSQL database.
+      host:
+        type: string
+        description: Database server hostname.
+      port:
+        type: number
+        default: 1433
+        description: "Database server port (default: 1433)."
+      database:
+        type: string
+        default: master
+        description: "Database name (default: master)."
+      username:
+        type: string
+        description: Database username.
+      password:
+        type: string
+        description: Database password.
+      encrypt:
+        type: boolean
+        default: false
+        description: "Enable encryption (default: false)."
+      trustServerCertificate:
+        type: boolean
+        default: true
+        description: "Trust server certificate (default: true)."
+  commandFunction:
+    # A function that produces the CLI command to start the MCP on stdio.
+    |-
+    (config) => ({ command: 'node', args: ['build/index.js'], env: { MSSQL_CONNECTION_STRING: config.connectionString, MSSQL_HOST: config.host, MSSQL_PORT: config.port.toString(), MSSQL_DATABASE: config.database, MSSQL_USER: config.username, MSSQL_PASSWORD: config.password, MSSQL_ENCRYPT: config.encrypt.toString(), MSSQL_TRUST_SERVER_CERTIFICATE: config.trustServerCertificate.toString() } })
